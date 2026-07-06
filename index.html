@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status Semasa Food Bank FPQS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="posterModal" class="modal-overlay">
+    <div class="modal-content">
+        <button class="close-modal-btn" onclick="closeModal()">×</button>
+        <img src="https://lh3.googleusercontent.com/d/1f_V2e0YXG2ylnvmorFMJ0O6n5KtxS6LG" alt="Poster Food Bank" class="poster-img">
+        <div class="timer-text" id="auto-close-timer">Paparan ini akan ditutup secara automatik dalam masa 15 saat...</div>
+    </div>
+</div>
+
+<div class="dashboard-container">
+    
+    <div class="header-box">
+        <div class="header-title">
+            <h1>Status Semasa Food Bank</h1>
+            <p>Paparan Maklumat Agihan & Inventori Food Bank FPQS</p>
+        </div>
+        <div class="controls">
+            <div class="date-input-container">
+                <label for="target-date">Tarikh Semasa</label>
+                <input type="date" id="target-date" class="date-input" onchange="processCurrentData()">
+            </div>
+            <div style="display:flex; align-items:center; gap:15px; margin-top:15px;">
+                <div class="update-time">
+                    Kemas Kini Terakhir:<br><span id="last-updated">Memuatkan...</span>
+                </div>
+                <button id="refreshBtn" class="refresh-btn" onclick="fetchDatabase()">
+                    <i class="fas fa-sync-alt" id="sync-icon"></i> Kemas Kini Data
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="action-buttons-container">
+        <button class="action-btn btn-poster" onclick="openModalManual()">
+            <i class="fas fa-image"></i> Lihat Poster Food Bank
+        </button>
+        <a href="https://sites.google.com/raudah.usim.edu.my/pmfpqsusim/sumbanganfoodbank" target="_blank" class="action-btn btn-donate">
+            <i class="fas fa-heart"></i> Borang Sumbangan & Infak
+        </a>
+    </div>
+
+    <div class="meta-grid">
+        <div class="meta-card">
+            <div class="meta-icon"><i class="fas fa-users"></i></div>
+            <div class="meta-info">
+                <h4>Penerima (Hari Ini)</h4>
+                <p id="total-logs">0</p>
+            </div>
+        </div>
+        <div class="meta-card">
+            <div class="meta-icon" style="color:#e67e22; background:#fdf2e9;"><i class="fas fa-box-open"></i></div>
+            <div class="meta-info">
+                <h4>Makanan Diagih (Hari Ini)</h4>
+                <p id="total-items-distributed">0</p>
+            </div>
+        </div>
+        <div class="meta-card">
+            <div class="meta-icon" style="color:#9b59b6; background:#f4ebf9;"><i class="fas fa-user-check"></i></div>
+            <div class="meta-info">
+                <h4>Penerima (Keseluruhan)</h4>
+                <p id="total-logs-alltime">0</p>
+            </div>
+        </div>
+        <div class="meta-card">
+            <div class="meta-icon" style="color:#e74c3c; background:#fdedec;"><i class="fas fa-boxes"></i></div>
+            <div class="meta-info">
+                <h4>Makanan Diagih (Keseluruhan)</h4>
+                <p id="total-items-alltime">0</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="stock-grid" id="stock-cards-container">
+        </div>
+
+    <div class="location-container">
+        <h3><i class="fas fa-map-marker-alt" style="color: var(--warning-color);"></i> Lokasi Pengambilan Makanan</h3>
+        <p>Pengambilan makanan/minuman ini boleh dibuat secara terus di <strong>hadapan Bilik Gerakan PMFPQS.</strong>.</p>
+        <p style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">*Terbuka kepada semua pelajar FPQS. Sila ambil secara berhemah mengikut terma dan syarat yang telah ditetapkan iaitu 2 item makanan sahaja bagi seorang pelajar. <strong>Setiap pengambilan wajib direkodkan</strong>.</p>
+    </div>
+
+</div>
+
+<footer class="site-footer">
+    <div class="footer-content">
+        <div class="footer-col left-col">
+            <h3>PERSATUAN MAHASISWA</h3>
+            <p>FAKULTI PENGAJIAN QURAN DAN SUNNAH<br>UNIVERSITI SAINS ISLAM MALAYSIA</p>
+            <p class="motto">"Mahasiswa Holistik, Memacu Kecemerlangan"</p>
+        </div>
+        <div class="footer-col center-col">
+            <h4>Pautan Pantas</h4>
+            <ul class="footer-links">
+                <li><a href="https://sites.google.com/raudah.usim.edu.my/pmfpqsusim/barisan-pmfpqs-2526">Tentang Kami</a></li>
+                <li><a href="mailto:pmfpqs@outlook.com">Hubungi Kami</a></li>
+            </ul>
+        </div>
+        <div class="footer-col right-col">
+            <h4>Ikuti Kami</h4>
+            <div class="social-icons">
+                <a href="https://www.instagram.com/pmfpqs" class="social-icon icon-ig"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.facebook.com/pmfpqs" class="social-icon icon-fb"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.youtube.com/@PMFPQSUSIM" class="social-icon icon-yt"><i class="fab fa-youtube"></i></a>
+                <a href="https://www.tiktok.com/@pmfpqsofficial" class="social-icon icon-tt"><i class="fab fa-tiktok"></i></a>
+                <a href="https://www.whatsapp.com/channel/0029VaH4GGaLtOj4n8TH3Y44" class="social-icon icon-wa"><i class="fab fa-whatsapp"></i></a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">© 2026 Persatuan Mahasiswa FPQS, USIM. Hak Cipta Terpelihara.</div>
+</footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>
