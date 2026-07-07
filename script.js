@@ -146,6 +146,7 @@ function calculateAndRenderDashboard(logRows, stockRows) {
 
         if (isToday) totalLogsToday++;
 
+        // 1. Semak Kolum G (Index 6) untuk item makanan biasa
         let itemText = row[6]; 
         if (itemText) {
             itemList.forEach(item => {
@@ -162,6 +163,18 @@ function calculateAndRenderDashboard(logRows, stockRows) {
                 }
             });
         }
+        
+        // 2. Semak Kolum H (Index 7) untuk "Makanan Infaq"
+        let infaqText = row[7];
+        if (infaqText && infaqText.toLowerCase().includes("ambil makanan infaq")) {
+            let qty = 1; 
+            totalItemsAllTime += qty;
+            
+            if (isToday) {
+                distributedCounts["Makanan Infaq"] += qty;
+                totalItemsDistributedToday += qty;
+            }
+        }
     });
 
     document.getElementById('total-logs').innerText = totalLogsToday;
@@ -176,8 +189,17 @@ function calculateAndRenderDashboard(logRows, stockRows) {
         let stokAwal = initialStocks[item] || 0;
         let diagih = distributedCounts[item] || 0;
         let baki = stokAwal - diagih;
-        if (baki < 0) baki = 0;
+        
+        // Jika tiada stok harian dimasukkan, baki ditetapkan sebagai 'N/A' (Tidak Berkenaan) 
+        // atau jika baki kurang dari 0 disebabkan tiada rekod stok harian awal.
+        let paparanBaki = baki;
+        if (stokAwal === 0 && diagih > 0) {
+            paparanBaki = "-"; // Menunjukkan agihan dibuat tanpa pengurusan jumlah baki harian tetap
+        } else if (baki < 0) {
+            paparanBaki = 0;
+        }
 
+        // PENAMBAHBAIKAN LOGIK: Kad akan dipaparkan jika stok awal > 0 ATAU jika jumlah diagih > 0
         if (stokAwal > 0 || diagih > 0) {
             const card = document.createElement('div');
             card.className = 'stock-card';
@@ -196,7 +218,7 @@ function calculateAndRenderDashboard(logRows, stockRows) {
                     </div>
                     <div class="stat-box">
                         <span class="stat-label">Baki Semasa</span>
-                        <span class="stat-val" style="color: ${baki === 0 ? 'var(--danger-color)' : 'var(--primary-color)'}; font-size: 22px;">${baki}</span>
+                        <span class="stat-val" style="color: ${paparanBaki === 0 || paparanBaki === '-' ? 'var(--danger-color)' : 'var(--primary-color)'}; font-size: 22px;">${paparanBaki}</span>
                     </div>
                 </div>
             `;
